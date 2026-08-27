@@ -24,21 +24,21 @@
 显示团队伤害、团队 DPS、房间用时、本局用时；战斗中在下方按伤害排序显示玩家。
 
 <p>
-  <img src="screenshots/dps-panel.png" alt="DPS 悬浮面板，等待进入战斗房间" width="333" align="top">
-  <img src="screenshots/dps-panel-recording.png" alt="DPS 悬浮面板，多人伤害统计展示" width="333" align="top">
+  <img src="../screenshots/dps-panel.png" alt="DPS 悬浮面板，等待进入战斗房间" width="333" align="top">
+  <img src="../screenshots/dps-panel-recording.png" alt="DPS 悬浮面板，多人伤害统计展示" width="333" align="top">
 </p>
 
 ### F9 独立设置菜单
 
 面板开关、位置锁定、背景不透明度、缩放均可在游戏内调整。设置菜单自身的背景不透明度固定为 75%，文字与控件保持清晰。
 
-![F9 独立设置菜单](screenshots/settings.png)
+![F9 独立设置菜单](../screenshots/settings.png)
 
 ### 可选：原生 MOD 设置入口
 
 另行安装 [SephiriaModSettings](https://github.com/G-Yoka/SephiriaModSettings) 后，还可以从 `ESC → 选项 → MOD 设置` 调整 DPS 配置。它是独立模组，**不包含在本项目中，也不是运行必需项**。
 
-![搭配 SephiriaModSettings 使用的原生设置页面](screenshots/native-settings.png)
+![搭配 SephiriaModSettings 使用的原生设置页面](../screenshots/native-settings.png)
 
 > 截图展示的是自定义配置；例如 55% 不透明度、75% 缩放，并非首次安装的默认值。
 
@@ -166,7 +166,7 @@ BepInEx/config/com.sephiriamods.dpsmeter.cfg
 在项目根目录打开 PowerShell，传入自己的游戏路径：
 
 ```powershell
-.\build.ps1 -GameDirectory 'D:\SteamLibrary\steamapps\common\Sephiria'
+.\plugin\build.ps1 -GameDirectory 'D:\SteamLibrary\steamapps\common\Sephiria'
 ```
 
 生成文件：`bin/SephiriaDpsMeter.dll`。
@@ -174,40 +174,42 @@ BepInEx/config/com.sephiriamods.dpsmeter.cfg
 构建可分发的插件 ZIP 和校验文件：
 
 ```powershell
-.\package.ps1 -GameDirectory 'D:\SteamLibrary\steamapps\common\Sephiria'
+.\plugin\package.ps1 -GameDirectory 'D:\SteamLibrary\steamapps\common\Sephiria'
 ```
 
-产物位于 `dist/`，包含版本化 ZIP、独立 DLL 和 `SHA256SUMS.txt`。打包脚本不会覆盖已有的同名 ZIP。
+产物位于 `dist/`，包含版本化 ZIP、独立 DLL 和 `SHA256SUMS.txt`。打包脚本不会覆盖已有的同名 ZIP；新构建安装包中的说明位于 `docs/`，截图位于 `screenshots/`。
 
 构建并安装到指定游戏目录（先退出游戏）：
 
 ```powershell
-.\build.ps1 -GameDirectory 'D:\SteamLibrary\steamapps\common\Sephiria' -Deploy
+.\plugin\build.ps1 -GameDirectory 'D:\SteamLibrary\steamapps\common\Sephiria' -Deploy
 ```
 
 也可在当前 PowerShell 会话设置环境变量：
 
 ```powershell
 $env:SEPHIRIA_GAME_DIR = 'D:\SteamLibrary\steamapps\common\Sephiria'
-.\build.ps1
+.\plugin\build.ps1
 ```
 
 仓库结构：
 
 ```text
 SephiriaDpsMeter/
-├── SephiriaDpsMeter/
+├── plugin/
 │   ├── Plugin.cs
 │   ├── RoomScope.cs
-│   └── MeterLocalization.cs
+│   ├── MeterLocalization.cs
+│   ├── build.ps1
+│   └── package.ps1
+├── docs/
+│   ├── README.md
+│   ├── README.en.md
+│   ├── INSTALL.md
+│   ├── CHANGELOG.md
+│   └── releases/
 ├── screenshots/
-├── build.ps1
-├── package.ps1
-├── INSTALL.md
-├── CHANGELOG.md
-├── .gitignore
-├── README.md
-└── README.en.md
+└── .gitignore
 ```
 
 ## 工作原理

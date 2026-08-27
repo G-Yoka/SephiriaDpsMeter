@@ -3,31 +3,32 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$sourcePath = Join-Path $PSScriptRoot 'SephiriaDpsMeter\Plugin.cs'
+$repositoryDirectory = Split-Path -Parent $PSScriptRoot
+$sourcePath = Join-Path $PSScriptRoot 'Plugin.cs'
 $versionMatch = [regex]::Match((Get-Content -LiteralPath $sourcePath -Raw), 'PluginVersion\s*=\s*"([^"]+)"')
 if (-not $versionMatch.Success) { throw 'Plugin version was not found.' }
 $version = $versionMatch.Groups[1].Value
 if ($version -notmatch '^\d+\.\d+\.\d+$') { throw 'Unexpected plugin version format.' }
 
-$distDirectory = Join-Path $PSScriptRoot 'dist'
+$distDirectory = Join-Path $repositoryDirectory 'dist'
 New-Item -ItemType Directory -Path $distDirectory -Force | Out-Null
 $zipPath = Join-Path $distDirectory "SephiriaDpsMeter-v$version.zip"
 if (Test-Path -LiteralPath $zipPath) { throw "Package already exists: $zipPath" }
 
 & (Join-Path $PSScriptRoot 'build.ps1') -GameDirectory $GameDirectory
-$dllPath = Join-Path $PSScriptRoot 'bin\SephiriaDpsMeter.dll'
+$dllPath = Join-Path $repositoryDirectory 'bin\SephiriaDpsMeter.dll'
 
 # Only explicit plugin/documentation files enter the archive. No game DLLs or configs.
 $entries = @(
     @{ Source = $dllPath; Entry = 'BepInEx/plugins/SephiriaDpsMeter.dll' },
-    @{ Source = (Join-Path $PSScriptRoot 'INSTALL.md'); Entry = 'INSTALL.md' },
-    @{ Source = (Join-Path $PSScriptRoot 'README.md'); Entry = 'README.md' },
-    @{ Source = (Join-Path $PSScriptRoot 'README.en.md'); Entry = 'README.en.md' },
-    @{ Source = (Join-Path $PSScriptRoot 'CHANGELOG.md'); Entry = 'CHANGELOG.md' },
-    @{ Source = (Join-Path $PSScriptRoot 'screenshots\dps-panel.png'); Entry = 'screenshots/dps-panel.png' },
-    @{ Source = (Join-Path $PSScriptRoot 'screenshots\dps-panel-recording.png'); Entry = 'screenshots/dps-panel-recording.png' },
-    @{ Source = (Join-Path $PSScriptRoot 'screenshots\settings.png'); Entry = 'screenshots/settings.png' },
-    @{ Source = (Join-Path $PSScriptRoot 'screenshots\native-settings.png'); Entry = 'screenshots/native-settings.png' }
+    @{ Source = (Join-Path $repositoryDirectory 'docs\INSTALL.md'); Entry = 'docs/INSTALL.md' },
+    @{ Source = (Join-Path $repositoryDirectory 'docs\README.md'); Entry = 'docs/README.md' },
+    @{ Source = (Join-Path $repositoryDirectory 'docs\README.en.md'); Entry = 'docs/README.en.md' },
+    @{ Source = (Join-Path $repositoryDirectory 'docs\CHANGELOG.md'); Entry = 'docs/CHANGELOG.md' },
+    @{ Source = (Join-Path $repositoryDirectory 'screenshots\dps-panel.png'); Entry = 'screenshots/dps-panel.png' },
+    @{ Source = (Join-Path $repositoryDirectory 'screenshots\dps-panel-recording.png'); Entry = 'screenshots/dps-panel-recording.png' },
+    @{ Source = (Join-Path $repositoryDirectory 'screenshots\settings.png'); Entry = 'screenshots/settings.png' },
+    @{ Source = (Join-Path $repositoryDirectory 'screenshots\native-settings.png'); Entry = 'screenshots/native-settings.png' }
 )
 foreach ($entry in $entries) {
     if (-not (Test-Path -LiteralPath $entry.Source -PathType Leaf)) { throw "Missing package file: $($entry.Source)" }

@@ -24,21 +24,21 @@ A **BepInEx 5** damage meter for Sephiria. Track player damage, DPS and damage s
 Team damage, team DPS, room time and run time appear above a damage-ranked player list.
 
 <p>
-  <img src="screenshots/dps-panel.png" alt="DPS overlay waiting for a battle room" width="333" align="top">
-  <img src="screenshots/dps-panel-recording.png" alt="Multiplayer damage statistics" width="333" align="top">
+  <img src="../screenshots/dps-panel.png" alt="DPS overlay waiting for a battle room" width="333" align="top">
+  <img src="../screenshots/dps-panel-recording.png" alt="Multiplayer damage statistics" width="333" align="top">
 </p>
 
 ### F9 settings menu
 
 Toggle the overlay, lock its position, and adjust background opacity and scale. The settings window itself has a fixed 75% background opacity; text and controls remain clear.
 
-![F9 settings menu](screenshots/settings.png)
+![F9 settings menu](../screenshots/settings.png)
 
 ### Optional native MOD settings
 
 Install [SephiriaModSettings](https://github.com/G-Yoka/SephiriaModSettings) separately to access DPS configuration through `ESC → Options → MOD Settings`. It is **optional and not bundled** with this plugin.
 
-![Native settings with SephiriaModSettings installed](screenshots/native-settings.png)
+![Native settings with SephiriaModSettings installed](../screenshots/native-settings.png)
 
 > Screenshots use customized settings, such as 55% opacity and 75% scale. These are not the first-install defaults.
 
@@ -168,7 +168,7 @@ Requires Windows, Sephiria, BepInEx 5 and the .NET Framework C# compiler at `Fra
 Run PowerShell in the repository directory and use your own game path:
 
 ```powershell
-.\build.ps1 -GameDirectory 'D:\SteamLibrary\steamapps\common\Sephiria'
+.\plugin\build.ps1 -GameDirectory 'D:\SteamLibrary\steamapps\common\Sephiria'
 ```
 
 Output: `bin/SephiriaDpsMeter.dll`.
@@ -176,38 +176,40 @@ Output: `bin/SephiriaDpsMeter.dll`.
 Build an installable ZIP, standalone DLL and `SHA256SUMS.txt` in `dist/`:
 
 ```powershell
-.\package.ps1 -GameDirectory 'D:\SteamLibrary\steamapps\common\Sephiria'
+.\plugin\package.ps1 -GameDirectory 'D:\SteamLibrary\steamapps\common\Sephiria'
 ```
 
-The ZIP includes both README languages and screenshots. The packaging script refuses to overwrite an existing same-version ZIP.
+Newly built ZIPs include both README languages under `docs/` and images under `screenshots/`. The packaging script refuses to overwrite an existing same-version ZIP.
 
 Build and install into the specified game directory **after exiting the game**:
 
 ```powershell
-.\build.ps1 -GameDirectory 'D:\SteamLibrary\steamapps\common\Sephiria' -Deploy
+.\plugin\build.ps1 -GameDirectory 'D:\SteamLibrary\steamapps\common\Sephiria' -Deploy
 ```
 
 Alternatively, set the game directory for the current PowerShell session:
 
 ```powershell
 $env:SEPHIRIA_GAME_DIR = 'D:\SteamLibrary\steamapps\common\Sephiria'
-.\build.ps1
+.\plugin\build.ps1
 ```
 
 ```text
 SephiriaDpsMeter/
-├── SephiriaDpsMeter/
+├── plugin/
 │   ├── Plugin.cs
 │   ├── RoomScope.cs
-│   └── MeterLocalization.cs
+│   ├── MeterLocalization.cs
+│   ├── build.ps1
+│   └── package.ps1
+├── docs/
+│   ├── README.md
+│   ├── README.en.md
+│   ├── INSTALL.md
+│   ├── CHANGELOG.md
+│   └── releases/
 ├── screenshots/
-├── build.ps1
-├── package.ps1
-├── INSTALL.md
-├── CHANGELOG.md
-├── .gitignore
-├── README.md
-└── README.en.md
+└── .gitignore
 ```
 
 ## How it works

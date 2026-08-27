@@ -7,8 +7,9 @@ $ErrorActionPreference = 'Stop'
 if ([string]::IsNullOrWhiteSpace($GameDirectory)) {
     throw 'Specify -GameDirectory or set SEPHIRIA_GAME_DIR to your Sephiria installation directory.'
 }
-$projectDirectory = Join-Path $PSScriptRoot 'SephiriaDpsMeter'
-$outputDirectory = Join-Path $PSScriptRoot 'bin'
+$repositoryDirectory = Split-Path -Parent $PSScriptRoot
+$projectDirectory = $PSScriptRoot
+$outputDirectory = Join-Path $repositoryDirectory 'bin'
 $outputFile = Join-Path $outputDirectory 'SephiriaDpsMeter.dll'
 $managedDirectory = Join-Path $GameDirectory 'Sephiria_Data\Managed'
 $bepInExCore = Join-Path $GameDirectory 'BepInEx\core'
