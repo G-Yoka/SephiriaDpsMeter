@@ -15,7 +15,7 @@ namespace SephiriaDpsMeter
     {
         public const string PluginGuid = "com.sephiriamods.dpsmeter";
         public const string PluginName = "Sephiria Multiplayer DPS Meter";
-        public const string PluginVersion = "1.5.0";
+        public const string PluginVersion = "1.5.1";
 
         private const float MeterWidth = 440f;
 

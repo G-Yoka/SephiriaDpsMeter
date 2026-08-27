@@ -1,5 +1,11 @@
 # 更新记录
 
+## v1.5.1（未发布 / Unreleased）
+
+- 游戏选择繁体中文（`zh-TW`）时，DPS 面板与 F9 设置改为使用简体中文，简体中文及其他语言的行为不变。
+- 112 项本地语言测试与 29 项房间规则回归测试通过；游戏内验证待完成。
+- Traditional Chinese now shares the Simplified Chinese overlay and F9 settings. Other languages still use English. In-game verification pending.
+
 ## v1.5.0
 
 - DPS 面板与 F9 设置自动跟随游戏语言：仅简体中文 `zh-CN` 使用中文，其他语言统一使用英语。

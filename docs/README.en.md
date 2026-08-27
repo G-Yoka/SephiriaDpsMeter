@@ -7,7 +7,8 @@
 
 A **BepInEx 5** damage meter for Sephiria. Track player damage, DPS and damage share for the current battle room in a movable, scalable overlay. Supports single-player and multiplayer sessions.
 
-- Current version: `v1.5.0`.
+- Source version: `v1.5.1` — Traditional Chinese mapping passed automated checks; in-game verification pending.
+- Current stable release: `v1.5.0`.
 - Steam AppID: [2436940](https://store.steampowered.com/app/2436940/Sephiria/).
 - Environment: Windows / BepInEx 5 / Unity Mono.
 - Compatibility: `v1.5.0` passed compilation, automated checks and in-game testing on 2026-08-27. Game updates may require compatibility checks.
@@ -15,7 +16,7 @@ A **BepInEx 5** damage meter for Sephiria. Track player damage, DPS and damage s
 
 > This is a **BepInEx 5** plugin, not a BepInEx 6 or IL2CPP plugin. Do not overwrite your existing loader with an unrelated mod's complete setup.
 
-> **v1.5.0 includes automatic Chinese/English UI selection.** Screenshots below show the Chinese UI.
+> **The v1.5.1 source now maps Traditional Chinese to the Simplified Chinese UI.** The current v1.5.0 Release still uses English for Traditional Chinese. Screenshots below show the Chinese UI.
 
 ## Screenshots
 
@@ -44,7 +45,7 @@ Install [SephiriaModSettings](https://github.com/G-Yoka/SephiriaModSettings) sep
 
 ## Features
 
-- **Automatic UI language (v1.5.0):** Simplified Chinese (`zh-CN`) uses Chinese; every other game language, including Traditional Chinese, uses English. The overlay, status messages and F9 menu update without restarting or resetting statistics. Player names are preserved.
+- **Automatic UI language (v1.5.1):** Simplified Chinese (`zh-CN`) and Traditional Chinese (`zh-TW`) both use the Simplified Chinese UI. All other game languages use English. The overlay, status messages and F9 menu update without restarting or resetting statistics. Player names are preserved.
 - **Per-player statistics:** total damage, damage share, DPS and hit count, ranked by damage.
 - **Room-based results:** battle state, floor and native battle bounds determine the current room. Results freeze when combat ends; a new battle, room or floor starts a new round.
 - **Separate rooms stay separate:** damage from teammates fighting in another room or on another floor is excluded.
@@ -104,14 +105,15 @@ The project does not bundle BepInEx, game assemblies or other mods. Do not mix B
 
 Opening F9 settings enables the system cursor; closing it restores the previous visibility and lock state. **The menu does not pause the game or block game attack input.** Clicking or dragging controls may also trigger gameplay actions, so adjust settings in a safe area.
 
-### UI language (v1.5.0)
+### UI language (v1.5.1)
 
 Use the game's own language setting. No separate plugin language option is needed, and Windows language does not select the UI text.
 
 | Game language | Overlay and F9 menu |
 | --- | --- |
 | Simplified Chinese (`zh-CN`) | Simplified Chinese |
-| English, Traditional Chinese, Korean, Japanese and all other languages | English |
+| Traditional Chinese (`zh-TW`) | Simplified Chinese |
+| English, Korean, Japanese and all other languages | English |
 | Uninitialized or unknown language | English |
 
 Changing language only updates text; it does not clear damage or restart either timer. The optional **SephiriaModSettings** native page manages its own text independently and is outside the translation scope of this plugin's F9 menu.
@@ -218,13 +220,13 @@ SephiriaDpsMeter/
 2. Attackers are resolved through `NetworkLeader` to `PlayerAvatar`. Floor and owner/target positions are checked before damage is accumulated by player network ID.
 3. The local player's battle state, floor and native battle area control statistics. Room state is also checked before each damage callback; there is no idle timeout.
 4. The plugin reads native run time and run state, then renders the overlay and settings with Unity IMGUI.
-5. Rendering reads `LocalizationManager.Instance.CurrentLanguage`. Only `zh-CN` selects Chinese; every other value selects English without changing game language or statistics.
+5. Rendering reads `LocalizationManager.Instance.CurrentLanguage`. Both `zh-CN` and `zh-TW` select Simplified Chinese; every other value selects English without changing game language or statistics.
 
 ## Troubleshooting
 
 **F9 does nothing**
 
-Confirm BepInEx 5 is installed, the DLL is in `plugins`, and `ToggleKey` has not changed. Check `BepInEx/LogOutput.log` for `Sephiria Multiplayer DPS Meter v1.5.0 loaded` or errors. Another mod may also use F9.
+Confirm BepInEx 5 is installed, the DLL is in `plugins`, and `ToggleKey` has not changed. Check `BepInEx/LogOutput.log` for `Sephiria Multiplayer DPS Meter v1.5.1 loaded` (source build), `v1.5.0 loaded` (stable release), or errors. Another mod may also use F9.
 
 **The game is in English, but the overlay is Chinese**
 

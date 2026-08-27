@@ -21,9 +21,10 @@ namespace SephiriaDpsMeter
 
         internal void SetLanguage(string gameLanguage)
         {
-            // The game's shipped Simplified Chinese locale is zh-CN.
-            // Traditional Chinese, unknown and not-yet-initialized locales use English.
-            IsChinese = string.Equals(gameLanguage, "zh-CN", StringComparison.OrdinalIgnoreCase);
+            // Both shipped Chinese locales share the Simplified Chinese UI.
+            // Other, unknown and not-yet-initialized locales use English.
+            IsChinese = string.Equals(gameLanguage, "zh-CN", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(gameLanguage, "zh-TW", StringComparison.OrdinalIgnoreCase);
         }
 
         internal string this[TextKey key]
