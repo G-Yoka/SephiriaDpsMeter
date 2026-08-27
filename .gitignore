@@ -3,6 +3,10 @@ bin/
 obj/
 dist/
 
+# Local-only tests; not published to GitHub
+/tests/
+/test-*.ps1
+
 # Game files and third-party runtime dependencies are not distributed here
 BepInEx/
 Sephiria_Data/

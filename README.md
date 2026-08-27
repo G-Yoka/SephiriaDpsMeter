@@ -192,22 +192,6 @@ $env:SEPHIRIA_GAME_DIR = 'D:\SteamLibrary\steamapps\common\Sephiria'
 .\build.ps1
 ```
 
-运行不依赖游戏的房间匹配规则测试（29 项）：
-
-```powershell
-.\test-dps-room-scope.ps1
-```
-
-这些测试覆盖同房、同层分房、跨楼层、跨房残留伤害、无效区域及边界判断，不替代游戏内联机测试。
-
-运行语言测试（85 项，另含界面文案集中管理检查）：
-
-```powershell
-.\test-dps-localization.ps1
-```
-
-覆盖全部中英文文案、简体中文选择、其他语言回退、反复切换、未命名玩家与玩家名字保留；不依赖游戏运行。
-
 仓库结构：
 
 ```text
@@ -216,14 +200,9 @@ SephiriaDpsMeter/
 │   ├── Plugin.cs
 │   ├── RoomScope.cs
 │   └── MeterLocalization.cs
-├── tests/
-│   ├── DpsRoomScopeTests.cs
-│   └── DpsLocalizationTests.cs
 ├── screenshots/
 ├── build.ps1
 ├── package.ps1
-├── test-dps-room-scope.ps1
-├── test-dps-localization.ps1
 ├── INSTALL.md
 ├── CHANGELOG.md
 ├── .gitignore

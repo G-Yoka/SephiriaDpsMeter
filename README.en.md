@@ -194,29 +194,15 @@ $env:SEPHIRIA_GAME_DIR = 'D:\SteamLibrary\steamapps\common\Sephiria'
 .\build.ps1
 ```
 
-Run tests without launching or referencing the game:
-
-```powershell
-.\test-dps-room-scope.ps1
-.\test-dps-localization.ps1
-```
-
-There are 29 room-rule checks and 85 localization checks, plus a UI-source check. They cover room isolation and boundaries, language selection/fallback, all translated labels, repeated switching and player-name preservation. These checks do not replace in-game testing.
-
 ```text
 SephiriaDpsMeter/
 ├── SephiriaDpsMeter/
 │   ├── Plugin.cs
 │   ├── RoomScope.cs
 │   └── MeterLocalization.cs
-├── tests/
-│   ├── DpsRoomScopeTests.cs
-│   └── DpsLocalizationTests.cs
 ├── screenshots/
 ├── build.ps1
 ├── package.ps1
-├── test-dps-room-scope.ps1
-├── test-dps-localization.ps1
 ├── INSTALL.md
 ├── CHANGELOG.md
 ├── .gitignore
