@@ -1,5 +1,3 @@
-# Sephiria DPS Meter
-
 🌐 语言 / Language：[简体中文](README.md) · [English](README.en.md)
 
 [![Downloads](https://img.shields.io/github/downloads/G-Yoka/SephiriaDpsMeter/latest/total?label=Downloads&color=blue)](https://github.com/G-Yoka/SephiriaDpsMeter/releases/latest)
