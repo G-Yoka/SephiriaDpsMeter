@@ -1,0 +1,25 @@
+# Build output and local packages
+bin/
+obj/
+dist/
+
+# Game files and third-party runtime dependencies are not distributed here
+BepInEx/
+Sephiria_Data/
+*.dll
+*.exe
+*.pdb
+*.zip
+
+# Local settings, credentials, logs and editor state
+.env
+.env.*
+*.cfg
+*.log
+*.user
+*.suo
+.vs/
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store
