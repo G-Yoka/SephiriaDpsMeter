@@ -1,9 +1,14 @@
 # Sephiria DPS Meter / 赛菲莉娅 多人 DPS 面板
 
+[![Downloads](https://img.shields.io/github/downloads/G-Yoka/SephiriaDpsMeter/latest/total?label=Downloads&color=blue)](https://github.com/G-Yoka/SephiriaDpsMeter/releases/latest)
+[![往期下载量合计](https://img.shields.io/github/downloads/G-Yoka/SephiriaDpsMeter/total?label=%E5%BE%80%E6%9C%9F%E4%B8%8B%E8%BD%BD%E9%87%8F%E5%90%88%E8%AE%A1&color=blue)](https://github.com/G-Yoka/SephiriaDpsMeter/releases)
+
 《赛菲莉娅》（Sephiria）的 BepInEx 5 伤害统计插件。按房间记录玩家伤害、DPS 与占比，用一个可拖动、可缩放的悬浮面板查看团队输出表现。
 
 - 当前版本：`v1.4.2`
+- Steam AppID：[2436940](https://store.steampowered.com/app/2436940/Sephiria/)
 - 运行环境：Windows / BepInEx 5 / Unity Mono
+- 兼容性：当前游戏版本已由作者实机验证（2026-08-27）；后续游戏更新需重新确认
 - 联机方式：读取游戏原生 Mirror 伤害反馈，面向单机、联机房主与客户端
 - 作者：**G-Yoka**
 
@@ -46,12 +51,20 @@
 
 ## 安装
 
+### 下载
+
+前往 [Releases 下载最新版](https://github.com/G-Yoka/SephiriaDpsMeter/releases/latest)，选择 `SephiriaDpsMeter-v1.4.2.zip` 插件安装包；也可只下载 `SephiriaDpsMeter.dll`。
+
+安装包已按 `BepInEx/plugins/SephiriaDpsMeter.dll` 放好目录，**不包含 BepInEx 加载器**。GitHub 自动提供的 `Source code (zip)` / `Source code (tar.gz)` 是源码，不是可直接安装的插件。
+
+> 顶部 `Downloads` 统计最新 Release 的附件下载量；“往期下载量合计”统计所有 Releases（含当前版本）的附件下载总量，不包含 Git 克隆和 GitHub 自动生成的源码包。计数由 Shields.io 自动更新，可能存在缓存延迟。
+
 ### 已安装 BepInEx 5
 
 1. 退出游戏，避免 DLL 正被游戏占用。
-2. 准备 `SephiriaDpsMeter.dll`：使用项目发布的插件文件，或按下文从源码构建。
+2. 从 [Releases](https://github.com/G-Yoka/SephiriaDpsMeter/releases/latest) 下载插件 ZIP 或 DLL，也可按下文从源码构建。
 3. 在 Steam 库中右键《赛菲莉娅》→ 管理 → 浏览本地文件。
-4. 将 DLL 放入游戏目录的 `BepInEx/plugins/`，如下所示。
+4. 使用 ZIP 时，将其中的 `BepInEx` 文件夹合并到游戏根目录；使用单独 DLL 时，将其放入 `BepInEx/plugins/`，如下所示。
 5. 正常启动游戏，按 `F9` 打开设置菜单。
 
 ```text
@@ -137,6 +150,14 @@ BepInEx/config/com.sephiriamods.dpsmeter.cfg
 
 生成文件：`bin/SephiriaDpsMeter.dll`。
 
+构建可分发的插件 ZIP 和校验文件：
+
+```powershell
+.\package.ps1 -GameDirectory 'D:\SteamLibrary\steamapps\common\Sephiria'
+```
+
+产物位于 `dist/`，包含版本化 ZIP、独立 DLL 和 `SHA256SUMS.txt`。打包脚本不会覆盖已有的同名 ZIP。
+
 构建并安装到指定游戏目录（先退出游戏）：
 
 ```powershell
@@ -157,6 +178,8 @@ SephiriaDpsMeter/
 ├── SephiriaDpsMeter/Plugin.cs
 ├── screenshots/
 ├── build.ps1
+├── package.ps1
+├── INSTALL.md
 ├── CHANGELOG.md
 ├── .gitignore
 └── README.md
