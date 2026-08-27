@@ -24,6 +24,7 @@ $entries = @(
     @{ Source = (Join-Path $PSScriptRoot 'README.md'); Entry = 'README.md' },
     @{ Source = (Join-Path $PSScriptRoot 'CHANGELOG.md'); Entry = 'CHANGELOG.md' },
     @{ Source = (Join-Path $PSScriptRoot 'screenshots\dps-panel.png'); Entry = 'screenshots/dps-panel.png' },
+    @{ Source = (Join-Path $PSScriptRoot 'screenshots\dps-panel-recording.png'); Entry = 'screenshots/dps-panel-recording.png' },
     @{ Source = (Join-Path $PSScriptRoot 'screenshots\settings.png'); Entry = 'screenshots/settings.png' },
     @{ Source = (Join-Path $PSScriptRoot 'screenshots\native-settings.png'); Entry = 'screenshots/native-settings.png' }
 )

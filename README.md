@@ -8,7 +8,7 @@
 - 当前版本：`v1.4.3`
 - Steam AppID：[2436940](https://store.steampowered.com/app/2436940/Sephiria/)
 - 运行环境：Windows / BepInEx 5 / Unity Mono
-- 兼容性：当前游戏版本已由作者实机验证（2026-08-27）；后续游戏更新需重新确认
+- 兼容性：当前游戏版本已实机验证（2026-08-27）；后续游戏更新需重新确认
 - 联机方式：读取游戏原生 Mirror 伤害反馈，面向单机、联机房主与客户端
 
 > 本项目使用 **BepInEx 5**，不是 BepInEx 6 或 IL2CPP 插件。请勿直接用其他模组的加载器完整包覆盖现有环境。
@@ -19,7 +19,10 @@
 
 显示团队伤害、团队 DPS、房间用时、本局用时；战斗中在下方按伤害排序显示玩家。
 
-![DPS 悬浮面板，等待进入战斗房间](screenshots/dps-panel.png)
+<p>
+  <img src="screenshots/dps-panel.png" alt="DPS 悬浮面板，等待进入战斗房间" width="333" align="top">
+  <img src="screenshots/dps-panel-recording.png" alt="DPS 悬浮面板，多人伤害统计展示" width="333" align="top">
+</p>
 
 ### F9 独立设置菜单
 
@@ -29,7 +32,7 @@
 
 ### 可选：原生 MOD 设置入口
 
-另行安装 `SephiriaModSettings` 后，还可以从 `ESC → 选项 → MOD 设置` 调整 DPS 配置。它是独立模组，**不包含在本项目中，也不是运行必需项**。
+另行安装 [SephiriaModSettings](https://github.com/G-Yoka/SephiriaModSettings) 后，还可以从 `ESC → 选项 → MOD 设置` 调整 DPS 配置。它是独立模组，**不包含在本项目中，也不是运行必需项**。
 
 ![搭配 SephiriaModSettings 使用的原生设置页面](screenshots/native-settings.png)
 
@@ -113,7 +116,7 @@ Sephiria/
 - “房间”由本地玩家的楼层标识与游戏刷怪器提供的战斗区域共同确定，并结合 `IsInBattle` 控制开始与冻结；显示的房间编号是插件本次加载以来的统计轮次，不是地图房间 ID。
 - 伤害所属玩家必须与本地玩家同层，且该玩家与受击目标都位于当前房间范围内。召唤物伤害同样检查其所属玩家；玩家离开房间后，留在旧房间的持续伤害不会跨房计入。
 - 无法识别有效战斗区域时显示“等待识别当前战斗房间”并暂停计入伤害，不退回全局汇总。缺少原生房间区域的特殊战斗可能无法统计。
-- v1.4.3 分房统计修复已由作者实机测试通过（2026-08-27）。
+- v1.4.3 分房统计修复已实机测试通过（2026-08-27）。
 - 当前不保存历史房间、跨重启统计或完整整局伤害榜；“本局用时”不代表整局伤害统计。
 
 ## 配置速查
