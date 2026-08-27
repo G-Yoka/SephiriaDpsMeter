@@ -10,7 +10,6 @@
 - 运行环境：Windows / BepInEx 5 / Unity Mono
 - 兼容性：当前游戏版本已由作者实机验证（2026-08-27）；后续游戏更新需重新确认
 - 联机方式：读取游戏原生 Mirror 伤害反馈，面向单机、联机房主与客户端
-- 作者：**G-Yoka**
 
 > 本项目使用 **BepInEx 5**，不是 BepInEx 6 或 IL2CPP 插件。请勿直接用其他模组的加载器完整包覆盖现有环境。
 
@@ -56,8 +55,6 @@
 前往 [Releases 下载最新版](https://github.com/G-Yoka/SephiriaDpsMeter/releases/latest)，选择 `SephiriaDpsMeter-v1.4.2.zip` 插件安装包；也可只下载 `SephiriaDpsMeter.dll`。
 
 安装包已按 `BepInEx/plugins/SephiriaDpsMeter.dll` 放好目录，**不包含 BepInEx 加载器**。GitHub 自动提供的 `Source code (zip)` / `Source code (tar.gz)` 是源码，不是可直接安装的插件。
-
-> 顶部 `Downloads` 统计最新 Release 的附件下载量；“往期下载量合计”统计所有 Releases（含当前版本）的附件下载总量，不包含 Git 克隆和 GitHub 自动生成的源码包。计数由 Shields.io 自动更新，可能存在缓存延迟。
 
 ### 已安装 BepInEx 5
 
@@ -213,4 +210,4 @@ SephiriaDpsMeter/
 ## 致谢与说明
 
 - 本插件为非官方项目，与游戏开发者无隶属关系。游戏、第三方加载器及依赖的权利归各自权利人所有，仓库不附带游戏程序集。
-- 作者署名：**by G-Yoka**。
+- 本插件不修改任何游戏文件，仅供学习与个人使用；使用本插件产生的任何后果由使用者自行承担。
