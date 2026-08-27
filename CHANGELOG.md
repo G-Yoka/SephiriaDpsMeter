@@ -1,12 +1,12 @@
 # 更新记录
 
-## v1.5.0（未发布 / Unreleased）
+## v1.5.0
 
 - DPS 面板与 F9 设置自动跟随游戏语言：仅简体中文 `zh-CN` 使用中文，其他语言统一使用英语。
 - 支持运行中切换语言，不重置伤害、房间或本局计时；玩家名字保持原样，未命名玩家的占位名称随语言更新。
 - 增加中英文 README 和语言切换链接；打包时包含两种语言的说明。
-- 85 项语言测试和 29 项房间规则回归测试通过；编译通过，游戏内语言切换及排版待验证。
-- Automatic Chinese/English UI selection, live language switching without resetting statistics, and bilingual documentation. In-game verification pending.
+- 85 项语言测试和 29 项房间规则回归测试通过；编译通过，并于 2026-08-27 完成游戏内测试。
+- Automatic Chinese/English UI selection, live language switching without resetting statistics, and bilingual documentation. In-game testing passed on 2026-08-27.
 
 ## v1.4.3
 

@@ -2,7 +2,7 @@
 
 中文使用说明见 README.md；English installation and usage: README.en.md.
 
-此版本已通过编译与自动测试，游戏内语言切换及排版待验证。
+此版本已通过编译、自动测试与游戏内测试（2026-08-27）。
 
 作者：G-Yoka · Steam AppID：2436940
 

@@ -7,16 +7,15 @@
 
 《赛菲莉娅》（Sephiria）的 BepInEx 5 伤害统计插件。按房间记录玩家伤害、DPS 与占比，用一个可拖动、可缩放的悬浮面板查看团队输出表现。
 
-- 源码版本：`v1.5.0`（语言切换已通过自动测试，待游戏内验证）
-- 当前正式版：`v1.4.3`
+- 当前版本：`v1.5.0`
 - Steam AppID：[2436940](https://store.steampowered.com/app/2436940/Sephiria/)
 - 运行环境：Windows / BepInEx 5 / Unity Mono
-- 兼容性：`v1.4.3` 已实机验证（2026-08-27）；`v1.5.0` 已通过编译与自动测试，语言切换及显示仍需游戏内验证；后续游戏更新需重新确认
+- 兼容性：`v1.5.0` 已通过编译、自动测试与游戏内测试（2026-08-27）；后续游戏更新需重新确认
 - 联机方式：读取游戏原生 Mirror 伤害反馈，面向单机、联机房主与客户端
 
 > 本项目使用 **BepInEx 5**，不是 BepInEx 6 或 IL2CPP 插件。请勿直接用其他模组的加载器完整包覆盖现有环境。
 
-> **双语界面为 v1.5.0 源码新增功能，尚未包含在 v1.4.3 Release 中。** 下列截图为中文界面示例。
+> **v1.5.0 已支持自动中英文界面。** 下列截图为中文界面示例。
 
 ## 截图
 
@@ -62,7 +61,7 @@
 
 ### 下载
 
-前往 [Releases 下载最新版](https://github.com/G-Yoka/SephiriaDpsMeter/releases/latest)，选择 `SephiriaDpsMeter-v1.4.3.zip` 插件安装包；也可只下载 `SephiriaDpsMeter.dll`。
+前往 [Releases 下载最新版](https://github.com/G-Yoka/SephiriaDpsMeter/releases/latest)，选择 `SephiriaDpsMeter-v1.5.0.zip` 插件安装包；也可只下载 `SephiriaDpsMeter.dll`。
 
 安装包已按 `BepInEx/plugins/SephiriaDpsMeter.dll` 放好目录，**不包含 BepInEx 加载器**。GitHub 自动提供的 `Source code (zip)` / `Source code (tar.gz)` 是源码，不是可直接安装的插件。
 
@@ -244,11 +243,11 @@ SephiriaDpsMeter/
 
 **按 F9 没有反应？**
 
-确认已安装 BepInEx 5，DLL 位于 `plugins` 中，配置中的 `ToggleKey` 未被更改。检查 `BepInEx/LogOutput.log` 是否有 `Sephiria Multiplayer DPS Meter v1.5.0 loaded`（当前源码构建）或 `v1.4.3 loaded`（当前正式版），以及加载错误；其他模组也可能占用 F9。
+确认已安装 BepInEx 5，DLL 位于 `plugins` 中，配置中的 `ToggleKey` 未被更改。检查 `BepInEx/LogOutput.log` 是否有 `Sephiria Multiplayer DPS Meter v1.5.0 loaded` 或加载错误；其他模组也可能占用 F9。
 
 **游戏改成英语，面板仍是中文？**
 
-先确认已安装支持双语界面的 `v1.5.0` 构建；`v1.4.3` Release 不包含此功能。`v1.5.0` 跟随游戏当前语言，而非系统语言；替换 DLL 后必须重新启动游戏，之后切换语言无需再重启。
+先确认已更新到 `v1.5.0` 或更新版本；旧版 `v1.4.3` 不包含双语界面。插件跟随游戏当前语言，而非系统语言；替换 DLL 后必须重新启动游戏，之后切换语言无需再重启。
 
 **面板一直显示等待，或者没有队友的数据？**
 

@@ -7,16 +7,15 @@
 
 A **BepInEx 5** damage meter for Sephiria. Track player damage, DPS and damage share for the current battle room in a movable, scalable overlay. Supports single-player and multiplayer sessions.
 
-- Source version: `v1.5.0` — built and automatically tested; in-game language switching and layout verification pending.
-- Current stable release: `v1.4.3`.
+- Current version: `v1.5.0`.
 - Steam AppID: [2436940](https://store.steampowered.com/app/2436940/Sephiria/).
 - Environment: Windows / BepInEx 5 / Unity Mono.
-- Compatibility: `v1.4.3` was tested in-game on 2026-08-27. Game updates may require compatibility checks.
+- Compatibility: `v1.5.0` passed compilation, automated checks and in-game testing on 2026-08-27. Game updates may require compatibility checks.
 - Multiplayer: reads the game's native Mirror damage feedback on the host or client.
 
 > This is a **BepInEx 5** plugin, not a BepInEx 6 or IL2CPP plugin. Do not overwrite your existing loader with an unrelated mod's complete setup.
 
-> **The bilingual UI is new in the v1.5.0 source and is not included in the v1.4.3 Release.** Screenshots below show the Chinese UI.
+> **v1.5.0 includes automatic Chinese/English UI selection.** Screenshots below show the Chinese UI.
 
 ## Screenshots
 
@@ -64,7 +63,7 @@ Install [SephiriaModSettings](https://github.com/G-Yoka/SephiriaModSettings) sep
 
 Get the plugin ZIP or standalone `SephiriaDpsMeter.dll` from [Releases](https://github.com/G-Yoka/SephiriaDpsMeter/releases/latest).
 
-The current stable ZIP is `SephiriaDpsMeter-v1.4.3.zip`; it does **not** include the new bilingual UI. To test v1.5.0 before a release is published, build the current source using the instructions below.
+Download `SephiriaDpsMeter-v1.5.0.zip` for the installable package, including the bilingual UI. Alternatively, build from source using the instructions below.
 
 The plugin ZIP already contains `BepInEx/plugins/SephiriaDpsMeter.dll`, but **does not include the loader**. GitHub's automatic `Source code (zip)` and `Source code (tar.gz)` downloads are source archives, not installable plugin packages.
 
@@ -237,11 +236,11 @@ SephiriaDpsMeter/
 
 **F9 does nothing**
 
-Confirm BepInEx 5 is installed, the DLL is in `plugins`, and `ToggleKey` has not changed. Check `BepInEx/LogOutput.log` for `Sephiria Multiplayer DPS Meter v1.5.0 loaded` (current source build), `v1.4.3 loaded` (stable release), or errors. Another mod may also use F9.
+Confirm BepInEx 5 is installed, the DLL is in `plugins`, and `ToggleKey` has not changed. Check `BepInEx/LogOutput.log` for `Sephiria Multiplayer DPS Meter v1.5.0 loaded` or errors. Another mod may also use F9.
 
 **The game is in English, but the overlay is Chinese**
 
-The bilingual UI requires v1.5.0; the v1.4.3 Release does not include it. Restart the game after replacing the DLL. Subsequent language changes in v1.5.0 do not need a restart. The plugin follows game language, not Windows language.
+Update to v1.5.0 or later; the older v1.4.3 Release does not include the bilingual UI. Restart the game after replacing the DLL. Subsequent language changes do not need a restart. The plugin follows game language, not Windows language.
 
 **The overlay is waiting, or a teammate is missing**
 
