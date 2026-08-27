@@ -41,6 +41,7 @@ foreach ($reference in $references) {
     $arguments += "/reference:$reference"
 }
 $arguments += (Join-Path $projectDirectory 'Plugin.cs')
+$arguments += (Join-Path $projectDirectory 'RoomScope.cs')
 
 & $compiler $arguments
 if ($LASTEXITCODE -ne 0) {

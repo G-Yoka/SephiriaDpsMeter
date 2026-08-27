@@ -14,7 +14,7 @@ namespace SephiriaDpsMeter
     {
         public const string PluginGuid = "com.sephiriamods.dpsmeter";
         public const string PluginName = "Sephiria Multiplayer DPS Meter";
-        public const string PluginVersion = "1.4.2";
+        public const string PluginVersion = "1.4.3";
 
         private const float MeterWidth = 440f;
 
@@ -53,6 +53,15 @@ namespace SephiriaDpsMeter
         private float roomStartedAt = -1f;
         private float roomEndedAt = -1f;
         private float displayedRunElapsed;
+        private RoomScope currentRoomScope;
+        private bool waitingForRoom;
+        private float pendingRoomStartedAt = -1f;
+        private RandomEnemyPhaseSpawner[] randomRoomSpawners = new RandomEnemyPhaseSpawner[0];
+        private EnemySpawner[] fixedRoomSpawners = new EnemySpawner[0];
+        private CommonEnemySpawner[] commonRoomSpawners = new CommonEnemySpawner[0];
+        private BossSpawner[] bossRoomSpawners = new BossSpawner[0];
+        private string cachedFloorGuid;
+        private float nextRoomScanAt;
 
         private GUIStyle windowStyle;
         private GUIStyle titleStyle;
@@ -145,30 +154,122 @@ namespace SephiriaDpsMeter
             PlayerAvatar player = GetCurrentPlayer();
             if (player == null)
             {
-                if (battleStateKnown && roomActive)
-                    EndRoom();
+                EndRoom();
                 battleStateKnown = false;
+                waitingForRoom = false;
+                pendingRoomStartedAt = -1f;
                 return;
             }
 
             bool inBattle = player.IsInBattle;
-            if (!battleStateKnown)
+            bool battleStarted = inBattle && (!battleStateKnown || !observedBattleState);
+            battleStateKnown = true;
+            observedBattleState = inBattle;
+            if (!inBattle)
             {
-                battleStateKnown = true;
-                observedBattleState = inBattle;
-                if (inBattle)
-                    BeginRoom();
+                EndRoom();
+                waitingForRoom = false;
+                pendingRoomStartedAt = -1f;
                 return;
             }
 
-            if (inBattle == observedBattleState)
-                return;
+            if (battleStarted)
+                pendingRoomStartedAt = Time.realtimeSinceStartup;
 
-            observedBattleState = inBattle;
-            if (inBattle)
-                BeginRoom();
-            else
+            RoomScope scope = FindCurrentRoom(player, battleStarted);
+            if (scope == null)
+            {
+                // Never attribute a different room's broadcast while location is unknown.
                 EndRoom();
+                if (!waitingForRoom)
+                    Logger.LogDebug("DPS waiting for a valid battle-room area on floor " + player.NetworkcurrentFloorGuid);
+                waitingForRoom = true;
+                return;
+            }
+
+            waitingForRoom = false;
+            if (!roomActive || !scope.IsSameRoom(currentRoomScope))
+            {
+                EndRoom();
+                BeginRoom(scope);
+            }
+        }
+
+        private RoomScope FindCurrentRoom(PlayerAvatar player, bool forceScan)
+        {
+            string floorGuid = player.NetworkcurrentFloorGuid;
+            Vector3 position = player.transform.position;
+            if (string.IsNullOrEmpty(floorGuid))
+                return null;
+
+            // Keep the captured area stable throughout a fight; do not scan on each hit.
+            if (!forceScan && roomActive && currentRoomScope != null &&
+                string.Equals(currentRoomScope.FloorGuid, floorGuid, StringComparison.Ordinal) &&
+                currentRoomScope.Contains(position.x, position.y))
+                return currentRoomScope;
+
+            if (forceScan || !string.Equals(cachedFloorGuid, floorGuid, StringComparison.Ordinal) ||
+                Time.realtimeSinceStartup >= nextRoomScanAt)
+            {
+                randomRoomSpawners = UnityEngine.Object.FindObjectsByType<RandomEnemyPhaseSpawner>(FindObjectsSortMode.None);
+                fixedRoomSpawners = UnityEngine.Object.FindObjectsByType<EnemySpawner>(FindObjectsSortMode.None);
+                commonRoomSpawners = UnityEngine.Object.FindObjectsByType<CommonEnemySpawner>(FindObjectsSortMode.None);
+                bossRoomSpawners = UnityEngine.Object.FindObjectsByType<BossSpawner>(FindObjectsSortMode.None);
+                cachedFloorGuid = floorGuid;
+                nextRoomScanAt = Time.realtimeSinceStartup + 0.5f;
+            }
+
+            RoomScope selected = null;
+            // A boss arena may also contain minion spawners. The arena wins.
+            for (int i = 0; i < bossRoomSpawners.Length; i++)
+            {
+                BossSpawner spawner = bossRoomSpawners[i];
+                if (spawner == null || !spawner.gameObject.activeInHierarchy)
+                    continue;
+                Vector2 origin = spawner.transform.position;
+                Vector2 lower = origin + spawner.playerPreventArea_lb;
+                Vector2 upper = origin + spawner.playerPreventArea_rt;
+                RoomScope candidate = RoomScope.Create(floorGuid, spawner.GetInstanceID(), lower.x, lower.y, upper.x, upper.y);
+                selected = RoomScope.SelectContaining(selected, candidate, position.x, position.y);
+            }
+            if (selected != null)
+                return selected;
+
+            for (int i = 0; i < randomRoomSpawners.Length; i++)
+            {
+                RandomEnemyPhaseSpawner spawner = randomRoomSpawners[i];
+                if (spawner == null || !spawner.gameObject.activeInHierarchy)
+                    continue;
+                // These synchronized bounds are already in world coordinates.
+                Vector2 lower = spawner.NetworkdetectArea_lb;
+                Vector2 upper = spawner.NetworkdetectArea_rt;
+                RoomScope candidate = RoomScope.Create(floorGuid, spawner.GetInstanceID(), lower.x, lower.y, upper.x, upper.y);
+                selected = RoomScope.SelectContaining(selected, candidate, position.x, position.y);
+            }
+            for (int i = 0; i < fixedRoomSpawners.Length; i++)
+            {
+                EnemySpawner spawner = fixedRoomSpawners[i];
+                if (spawner == null || !spawner.gameObject.activeInHierarchy)
+                    continue;
+                // Fixed spawners store prefab-local bounds; the game adds their position.
+                Vector2 origin = spawner.transform.position;
+                Vector2 lower = origin + spawner.NetworkplayerPreventArea_lb;
+                Vector2 upper = origin + spawner.NetworkplayerPreventArea_rt;
+                RoomScope candidate = RoomScope.Create(floorGuid, spawner.GetInstanceID(), lower.x, lower.y, upper.x, upper.y);
+                selected = RoomScope.SelectContaining(selected, candidate, position.x, position.y);
+            }
+            for (int i = 0; i < commonRoomSpawners.Length; i++)
+            {
+                CommonEnemySpawner spawner = commonRoomSpawners[i];
+                if (spawner == null || !spawner.gameObject.activeInHierarchy)
+                    continue;
+                Vector2 origin = spawner.transform.position;
+                Vector2 lower = origin + spawner.NetworkplayerPreventArea_lb;
+                Vector2 upper = origin + spawner.NetworkplayerPreventArea_rt;
+                RoomScope candidate = RoomScope.Create(floorGuid, spawner.GetInstanceID(), lower.x, lower.y, upper.x, upper.y);
+                selected = RoomScope.SelectContaining(selected, candidate, position.x, position.y);
+            }
+            return selected;
         }
 
         private static PlayerAvatar GetCurrentPlayer()
@@ -204,12 +305,14 @@ namespace SephiriaDpsMeter
             observedRunStarted = runStarted;
         }
 
-        private void BeginRoom()
+        private void BeginRoom(RoomScope scope)
         {
+            currentRoomScope = scope;
             damageByPlayer.Clear();
             scrollPosition = Vector2.zero;
             roomSequence++;
-            roomStartedAt = Time.realtimeSinceStartup;
+            roomStartedAt = pendingRoomStartedAt >= 0f ? pendingRoomStartedAt : Time.realtimeSinceStartup;
+            pendingRoomStartedAt = -1f;
             roomEndedAt = -1f;
             roomActive = true;
             hasRoomResult = true;
@@ -266,12 +369,18 @@ namespace SephiriaDpsMeter
             DrawRect(new Rect(MeterWidth - 1f, 0f, 1f, currentMeterHeight), border);
 
             GUI.Label(new Rect(16f, 11f, 155f, 24f), "DPS METER", titleStyle);
-            string roomText = hasRoomResult ? "房间  #" + roomSequence : "等待进入战斗房间";
+            string roomText = waitingForRoom ? "等待识别当前战斗房间" :
+                hasRoomResult ? "房间  #" + roomSequence + " · 当前房间统计" : "等待进入战斗房间";
             GUI.Label(new Rect(16f, 32f, 210f, 19f), roomText, subtitleStyle);
 
             string stateText;
             Color stateColor;
-            if (roomActive)
+            if (waitingForRoom)
+            {
+                stateText = "○  房间识别中";
+                stateColor = MutedColor;
+            }
+            else if (roomActive)
             {
                 stateText = "●  统计中";
                 stateColor = ActiveColor;
@@ -313,7 +422,8 @@ namespace SephiriaDpsMeter
             Rect listRect = new Rect(12f, 135f, 416f, currentMeterHeight - 147f);
             if (rows.Count == 0)
             {
-                string emptyText = roomActive ? "房间已开始，等待造成伤害…" : "进入战斗房间后自动开始统计";
+                string emptyText = waitingForRoom ? "房间信息未就绪，暂不计入伤害" :
+                    roomActive ? "房间已开始，等待造成伤害…" : "进入战斗房间后自动开始统计";
                 GUI.Label(new Rect(20f, 137f, 400f, 34f), emptyText, centerStyle);
             }
             else
@@ -493,16 +603,10 @@ namespace SephiriaDpsMeter
             if (feedbacks == null || feedbacks.Length == 0)
                 return;
 
-            if (!roomActive)
-            {
-                PlayerAvatar currentPlayer = GetCurrentPlayer();
-                if (currentPlayer == null || !currentPlayer.IsInBattle)
-                    return;
-
-                observedBattleState = true;
-                battleStateKnown = true;
-                BeginRoom();
-            }
+            // Network callbacks can arrive before Update or after a room transition.
+            PollRoomLifecycle();
+            if (!roomActive || waitingForRoom || currentRoomScope == null)
+                return;
 
             bool recordedAny = false;
             HashSet<uint> hitPlayers = new HashSet<uint>();
@@ -513,11 +617,17 @@ namespace SephiriaDpsMeter
                     continue;
 
                 UnitAvatar actualVictim = feedback.self != null ? feedback.self : victim;
-                if (ResolvePlayer(actualVictim) != null)
+                if (actualVictim == null || ResolvePlayer(actualVictim) != null)
                     continue;
 
                 PlayerAvatar player = ResolvePlayer(feedback.attacker);
                 if (player == null)
+                    continue;
+
+                Vector3 ownerPosition = player.transform.position;
+                Vector3 victimPosition = actualVictim.transform.position;
+                if (!currentRoomScope.AllowsDamage(player.NetworkcurrentFloorGuid,
+                    ownerPosition.x, ownerPosition.y, victimPosition.x, victimPosition.y))
                     continue;
 
                 if (!countShieldDamage.Value && recordedAny)
