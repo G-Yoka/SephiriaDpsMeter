@@ -5,6 +5,8 @@
 [![Downloads](https://img.shields.io/github/downloads/G-Yoka/SephiriaDpsMeter/latest/total?label=Downloads&color=blue)](https://github.com/G-Yoka/SephiriaDpsMeter/releases/latest)
 [![往期下载量合计](https://img.shields.io/github/downloads/G-Yoka/SephiriaDpsMeter/total?label=%E5%BE%80%E6%9C%9F%E4%B8%8B%E8%BD%BD%E9%87%8F%E5%90%88%E8%AE%A1&color=blue)](https://github.com/G-Yoka/SephiriaDpsMeter/releases)
 
+![模组封面](../screenshots/cover-zh.png)
+
 《赛菲莉娅》（Sephiria）的 BepInEx 5 伤害统计插件。按房间记录玩家伤害、DPS 与占比，用一个可拖动、可缩放的悬浮面板查看团队输出表现。
 
 - 当前版本：`v1.5.1`

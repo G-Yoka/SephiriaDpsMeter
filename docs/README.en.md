@@ -5,6 +5,8 @@
 [![Downloads](https://img.shields.io/github/downloads/G-Yoka/SephiriaDpsMeter/latest/total?label=Downloads&color=blue)](https://github.com/G-Yoka/SephiriaDpsMeter/releases/latest)
 [![Total downloads](https://img.shields.io/github/downloads/G-Yoka/SephiriaDpsMeter/total?label=Total%20downloads&color=blue)](https://github.com/G-Yoka/SephiriaDpsMeter/releases)
 
+![Mod cover](../screenshots/cover-en.png)
+
 A **BepInEx 5** damage meter for Sephiria. Track player damage, DPS and damage share for the current battle room in a movable, scalable overlay. Supports single-player and multiplayer sessions.
 
 - Current version: `v1.5.1`.

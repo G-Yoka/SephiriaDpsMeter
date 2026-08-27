@@ -25,6 +25,8 @@ $entries = @(
     @{ Source = (Join-Path $repositoryDirectory 'docs\README.md'); Entry = 'docs/README.md' },
     @{ Source = (Join-Path $repositoryDirectory 'docs\README.en.md'); Entry = 'docs/README.en.md' },
     @{ Source = (Join-Path $repositoryDirectory 'docs\CHANGELOG.md'); Entry = 'docs/CHANGELOG.md' },
+    @{ Source = (Join-Path $repositoryDirectory 'screenshots\cover-en.png'); Entry = 'screenshots/cover-en.png' },
+    @{ Source = (Join-Path $repositoryDirectory 'screenshots\cover-zh.png'); Entry = 'screenshots/cover-zh.png' },
     @{ Source = (Join-Path $repositoryDirectory 'screenshots\dps-panel.png'); Entry = 'screenshots/dps-panel.png' },
     @{ Source = (Join-Path $repositoryDirectory 'screenshots\dps-panel-recording.png'); Entry = 'screenshots/dps-panel-recording.png' },
     @{ Source = (Join-Path $repositoryDirectory 'screenshots\settings.png'); Entry = 'screenshots/settings.png' },
