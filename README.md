@@ -1,17 +1,22 @@
 # Sephiria DPS Meter / 赛菲莉娅 多人 DPS 面板
 
+🌐 语言 / Language：[简体中文](README.md) · [English](README.en.md)
+
 [![Downloads](https://img.shields.io/github/downloads/G-Yoka/SephiriaDpsMeter/latest/total?label=Downloads&color=blue)](https://github.com/G-Yoka/SephiriaDpsMeter/releases/latest)
 [![往期下载量合计](https://img.shields.io/github/downloads/G-Yoka/SephiriaDpsMeter/total?label=%E5%BE%80%E6%9C%9F%E4%B8%8B%E8%BD%BD%E9%87%8F%E5%90%88%E8%AE%A1&color=blue)](https://github.com/G-Yoka/SephiriaDpsMeter/releases)
 
 《赛菲莉娅》（Sephiria）的 BepInEx 5 伤害统计插件。按房间记录玩家伤害、DPS 与占比，用一个可拖动、可缩放的悬浮面板查看团队输出表现。
 
-- 当前版本：`v1.4.3`
+- 源码版本：`v1.5.0`（语言切换已通过自动测试，待游戏内验证）
+- 当前正式版：`v1.4.3`
 - Steam AppID：[2436940](https://store.steampowered.com/app/2436940/Sephiria/)
 - 运行环境：Windows / BepInEx 5 / Unity Mono
-- 兼容性：当前游戏版本已实机验证（2026-08-27）；后续游戏更新需重新确认
+- 兼容性：`v1.4.3` 已实机验证（2026-08-27）；`v1.5.0` 已通过编译与自动测试，语言切换及显示仍需游戏内验证；后续游戏更新需重新确认
 - 联机方式：读取游戏原生 Mirror 伤害反馈，面向单机、联机房主与客户端
 
 > 本项目使用 **BepInEx 5**，不是 BepInEx 6 或 IL2CPP 插件。请勿直接用其他模组的加载器完整包覆盖现有环境。
+
+> **双语界面为 v1.5.0 源码新增功能，尚未包含在 v1.4.3 Release 中。** 下列截图为中文界面示例。
 
 ## 截图
 
@@ -40,6 +45,7 @@
 
 ## 功能
 
+- **自动语言切换（v1.5.0）**：跟随游戏当前语言；简体中文（`zh-CN`）显示中文，其他所有语言（包括繁体中文）显示英语。面板、状态提示与 F9 设置同步切换，无需重启，不重置统计；玩家名字保持原样。
 - **按玩家统计**：显示总伤害、团队伤害占比、DPS 与命中计数，按伤害从高到低排列。
 - **房间制统计**：结合本地玩家的战斗状态、楼层与战斗区域开始统计，脱离战斗后冻结结果；进入新的战斗房间或楼层时开始新一轮。
 - **分房隔离**：只统计当前房间内玩家对房间内敌人造成的伤害；队友在同层其他房间或不同楼层战斗时，不会混入当前面板。
@@ -96,6 +102,18 @@ Sephiria/
 5. 未锁定时拖动 `DPS METER` 标题区域移动主面板。
 
 打开 F9 设置时使用系统光标；关闭后恢复之前的光标可见性与锁定状态。设置菜单不暂停游戏，建议在安全区域调整；由于本插件不屏蔽游戏攻击输入，点击或拖动界面时也可能触发游戏操作。
+
+### 界面语言（v1.5.0）
+
+在游戏自己的语言设置中选择语言即可，插件不需要额外的语言配置项，也不根据 Windows 系统语言选择文案。
+
+| 游戏语言 | DPS 面板与 F9 设置 |
+| --- | --- |
+| 简体中文（`zh-CN`） | 简体中文 |
+| English、繁体中文、한국어、日本語等其他语言 | English |
+| 语言尚未初始化或无法识别 | English |
+
+切换语言仅改变界面文案，不清空伤害排行、不重启房间或本局计时。独立模组 `SephiriaModSettings` 的原生设置页文案由该项目自身管理，不属于本插件 F9 窗口的翻译范围。
 
 ## 统计口径与联机说明
 
@@ -183,22 +201,35 @@ $env:SEPHIRIA_GAME_DIR = 'D:\SteamLibrary\steamapps\common\Sephiria'
 
 这些测试覆盖同房、同层分房、跨楼层、跨房残留伤害、无效区域及边界判断，不替代游戏内联机测试。
 
+运行语言测试（85 项，另含界面文案集中管理检查）：
+
+```powershell
+.\test-dps-localization.ps1
+```
+
+覆盖全部中英文文案、简体中文选择、其他语言回退、反复切换、未命名玩家与玩家名字保留；不依赖游戏运行。
+
 仓库结构：
 
 ```text
 SephiriaDpsMeter/
 ├── SephiriaDpsMeter/
 │   ├── Plugin.cs
-│   └── RoomScope.cs
-├── tests/DpsRoomScopeTests.cs
+│   ├── RoomScope.cs
+│   └── MeterLocalization.cs
+├── tests/
+│   ├── DpsRoomScopeTests.cs
+│   └── DpsLocalizationTests.cs
 ├── screenshots/
 ├── build.ps1
 ├── package.ps1
 ├── test-dps-room-scope.ps1
+├── test-dps-localization.ps1
 ├── INSTALL.md
 ├── CHANGELOG.md
 ├── .gitignore
-└── README.md
+├── README.md
+└── README.en.md
 ```
 
 ## 工作原理
@@ -207,12 +238,17 @@ SephiriaDpsMeter/
 2. 将反馈中的攻击者沿 `NetworkLeader` 关系追溯到 `PlayerAvatar`，检查所属玩家楼层以及玩家、受击目标的房间范围，再按玩家网络 ID 累加伤害。
 3. 结合本地玩家 `IsInBattle`、楼层与原生战斗区域决定统计的开始与冻结；伤害回调前也检查房间切换，不使用空闲超时。
 4. 读取游戏本局计时及整局状态，由 Unity IMGUI 绘制面板与独立设置窗口。
+5. 绘制时读取 `LocalizationManager.Instance.CurrentLanguage`，仅 `zh-CN` 使用中文，其余使用英语；不修改游戏语言或统计状态。
 
 ## 常见问题
 
 **按 F9 没有反应？**
 
-确认已安装 BepInEx 5，DLL 位于 `plugins` 中，配置中的 `ToggleKey` 未被更改。检查 `BepInEx/LogOutput.log` 是否有 `Sephiria Multiplayer DPS Meter v1.4.3 loaded` 或加载错误；其他模组也可能占用 F9。
+确认已安装 BepInEx 5，DLL 位于 `plugins` 中，配置中的 `ToggleKey` 未被更改。检查 `BepInEx/LogOutput.log` 是否有 `Sephiria Multiplayer DPS Meter v1.5.0 loaded`（当前源码构建）或 `v1.4.3 loaded`（当前正式版），以及加载错误；其他模组也可能占用 F9。
+
+**游戏改成英语，面板仍是中文？**
+
+先确认已安装支持双语界面的 `v1.5.0` 构建；`v1.4.3` Release 不包含此功能。`v1.5.0` 跟随游戏当前语言，而非系统语言；替换 DLL 后必须重新启动游戏，之后切换语言无需再重启。
 
 **面板一直显示等待，或者没有队友的数据？**
 

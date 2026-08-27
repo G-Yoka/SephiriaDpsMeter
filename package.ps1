@@ -22,6 +22,7 @@ $entries = @(
     @{ Source = $dllPath; Entry = 'BepInEx/plugins/SephiriaDpsMeter.dll' },
     @{ Source = (Join-Path $PSScriptRoot 'INSTALL.md'); Entry = 'INSTALL.md' },
     @{ Source = (Join-Path $PSScriptRoot 'README.md'); Entry = 'README.md' },
+    @{ Source = (Join-Path $PSScriptRoot 'README.en.md'); Entry = 'README.en.md' },
     @{ Source = (Join-Path $PSScriptRoot 'CHANGELOG.md'); Entry = 'CHANGELOG.md' },
     @{ Source = (Join-Path $PSScriptRoot 'screenshots\dps-panel.png'); Entry = 'screenshots/dps-panel.png' },
     @{ Source = (Join-Path $PSScriptRoot 'screenshots\dps-panel-recording.png'); Entry = 'screenshots/dps-panel-recording.png' },

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -14,7 +15,7 @@ namespace SephiriaDpsMeter
     {
         public const string PluginGuid = "com.sephiriamods.dpsmeter";
         public const string PluginName = "Sephiria Multiplayer DPS Meter";
-        public const string PluginVersion = "1.4.3";
+        public const string PluginVersion = "1.5.0";
 
         private const float MeterWidth = 440f;
 
@@ -43,6 +44,7 @@ namespace SephiriaDpsMeter
         private CursorLockMode savedSystemCursorLockMode;
 
         private readonly Dictionary<uint, PlayerDamage> damageByPlayer = new Dictionary<uint, PlayerDamage>();
+        private readonly MeterLocalization text = new MeterLocalization();
         private bool battleStateKnown;
         private bool observedBattleState;
         private bool roomActive;
@@ -99,7 +101,7 @@ namespace SephiriaDpsMeter
             meterEnabled = Config.Bind("Interface", "Visible", true,
                 "Show the multiplayer DPS meter.");
             toggleKey = Config.Bind("Interface", "ToggleKey", Key.F9,
-                "Key used to show or hide the DPS meter.");
+                "Key used to open or close the DPS settings menu.");
             windowX = Config.Bind("Interface", "WindowX", 20f,
                 "DPS meter horizontal position in pixels.");
             windowY = Config.Bind("Interface", "WindowY", 120f,
@@ -333,6 +335,8 @@ namespace SephiriaDpsMeter
             if (!meterEnabled.Value && !settingsVisible)
                 return;
 
+            // Read once per GUI event; live switches do not reset rooms, timers or player rows.
+            text.SetLanguage(LocalizationManager.Instance.CurrentLanguage);
             EnsureStyles();
             if (meterEnabled.Value)
             {
@@ -369,30 +373,30 @@ namespace SephiriaDpsMeter
             DrawRect(new Rect(MeterWidth - 1f, 0f, 1f, currentMeterHeight), border);
 
             GUI.Label(new Rect(16f, 11f, 155f, 24f), "DPS METER", titleStyle);
-            string roomText = waitingForRoom ? "等待识别当前战斗房间" :
-                hasRoomResult ? "房间  #" + roomSequence + " · 当前房间统计" : "等待进入战斗房间";
+            string roomText = waitingForRoom ? text[TextKey.IdentifyingRoom] :
+                hasRoomResult ? text.RoomSummary(roomSequence) : text[TextKey.WaitingForRoom];
             GUI.Label(new Rect(16f, 32f, 210f, 19f), roomText, subtitleStyle);
 
             string stateText;
             Color stateColor;
             if (waitingForRoom)
             {
-                stateText = "○  房间识别中";
+                stateText = text[TextKey.Locating];
                 stateColor = MutedColor;
             }
             else if (roomActive)
             {
-                stateText = "●  统计中";
+                stateText = text[TextKey.Recording];
                 stateColor = ActiveColor;
             }
             else if (hasRoomResult)
             {
-                stateText = "◆  房间结算";
+                stateText = text[TextKey.Complete];
                 stateColor = FinishedColor;
             }
             else
             {
-                stateText = "○  待机";
+                stateText = text[TextKey.Idle];
                 stateColor = MutedColor;
             }
             statusStyle.normal.textColor = stateColor;
@@ -405,25 +409,25 @@ namespace SephiriaDpsMeter
 
             DrawRect(new Rect(12f, 58f, 416f, 48f), CardColor);
             float runElapsed = GetRunElapsed();
-            DrawMetric(22f, 88f, "团队伤害", FormatNumber(groupTotal));
+            DrawMetric(22f, 88f, text[TextKey.TeamDamage], FormatNumber(groupTotal));
             DrawRect(new Rect(116f, 68f, 1f, 28f), new Color(0.25f, 0.30f, 0.38f, 0.65f));
-            DrawMetric(127f, 88f, "团队 DPS", FormatNumber((long)Math.Round(groupDps)));
+            DrawMetric(127f, 88f, text[TextKey.TeamDps], FormatNumber((long)Math.Round(groupDps)));
             DrawRect(new Rect(220f, 68f, 1f, 28f), new Color(0.25f, 0.30f, 0.38f, 0.65f));
-            DrawMetric(231f, 84f, "房间用时", FormatTime(elapsed));
+            DrawMetric(231f, 84f, text[TextKey.RoomTime], FormatTime(elapsed));
             DrawRect(new Rect(324f, 68f, 1f, 28f), new Color(0.25f, 0.30f, 0.38f, 0.65f));
-            DrawMetric(335f, 88f, "本局用时", FormatRunTime(runElapsed));
+            DrawMetric(335f, 88f, text[TextKey.RunTime], FormatRunTime(runElapsed));
 
             float tableContentWidth = rows.Count > 6 ? 400f : 416f;
-            GUI.Label(new Rect(16f, 112f, 190f, 20f), "玩家 / 伤害占比", columnStyle);
-            GUI.Label(new Rect(216f, 112f, 88f, 20f), "总伤害", columnCenterStyle);
+            GUI.Label(new Rect(16f, 112f, 190f, 20f), text[TextKey.PlayerShare], columnStyle);
+            GUI.Label(new Rect(216f, 112f, 88f, 20f), text[TextKey.TotalDamage], columnCenterStyle);
             GUI.Label(new Rect(304f, 112f, 76f, 20f), "DPS", columnCenterStyle);
-            GUI.Label(new Rect(380f, 112f, tableContentWidth - 368f, 20f), "命中", columnCenterStyle);
+            GUI.Label(new Rect(380f, 112f, tableContentWidth - 368f, 20f), text[TextKey.Hits], columnCenterStyle);
 
             Rect listRect = new Rect(12f, 135f, 416f, currentMeterHeight - 147f);
             if (rows.Count == 0)
             {
-                string emptyText = waitingForRoom ? "房间信息未就绪，暂不计入伤害" :
-                    roomActive ? "房间已开始，等待造成伤害…" : "进入战斗房间后自动开始统计";
+                string emptyText = waitingForRoom ? text[TextKey.UnknownRoomHint] :
+                    roomActive ? text[TextKey.WaitingForDamageHint] : text[TextKey.EnterRoomHint];
                 GUI.Label(new Rect(20f, 137f, 400f, 34f), emptyText, centerStyle);
             }
             else
@@ -448,7 +452,7 @@ namespace SephiriaDpsMeter
             DrawSolidRect(new Rect(0f, 0f, settingsRect.width, 3f), AccentColor);
             DrawSolidRect(new Rect(0f, settingsRect.height - 1f, settingsRect.width, 1f), new Color(0.2f, 0.32f, 0.45f, 0.9f));
 
-            GUI.Label(new Rect(16f, 12f, 190f, 26f), "DPS 面板设置", titleStyle);
+            GUI.Label(new Rect(16f, 12f, 130f, 26f), text[TextKey.SettingsTitle], titleStyle);
             GUI.Label(new Rect(150f, 16f, 90f, 20f), "by G-Yoka", authorStyle);
 
             Rect closeRect = new Rect(260f, 10f, 26f, 26f);
@@ -465,20 +469,20 @@ namespace SephiriaDpsMeter
             DrawSolidRect(new Rect(12f, 48f, 276f, 42f), CardColor);
             if (GUI.Button(new Rect(12f, 48f, 276f, 42f), string.Empty, GUIStyle.none))
                 meterEnabled.Value = !meterEnabled.Value;
-            GUI.Label(new Rect(24f, 58f, 190f, 22f), "显示 DPS 面板", nameStyle);
+            GUI.Label(new Rect(24f, 58f, 190f, 22f), text[TextKey.ShowPanel], nameStyle);
             DrawToggleIndicator(new Rect(246f, 59f, 28f, 20f), meterEnabled.Value);
 
             DrawSolidRect(new Rect(12f, 96f, 276f, 42f), CardAltColor);
             if (GUI.Button(new Rect(12f, 96f, 276f, 42f), string.Empty, GUIStyle.none))
                 lockWindowPosition.Value = !lockWindowPosition.Value;
-            GUI.Label(new Rect(24f, 106f, 190f, 22f), "固定面板位置", nameStyle);
+            GUI.Label(new Rect(24f, 106f, 190f, 22f), text[TextKey.LockPosition], nameStyle);
             DrawToggleIndicator(new Rect(246f, 107f, 28f, 20f), lockWindowPosition.Value);
 
-            GUI.Label(new Rect(20f, 150f, 150f, 20f), "面板不透明度", columnStyle);
+            GUI.Label(new Rect(20f, 150f, 150f, 20f), text[TextKey.PanelOpacity], columnStyle);
             GUI.Label(new Rect(226f, 150f, 54f, 20f), Mathf.RoundToInt(panelOpacity.Value * 100f) + "%", columnCenterStyle);
             DrawOpacitySlider(new Rect(20f, 177f, 260f, 18f));
 
-            GUI.Label(new Rect(20f, 202f, 150f, 20f), "DPS 面板缩放", columnStyle);
+            GUI.Label(new Rect(20f, 202f, 150f, 20f), text[TextKey.PanelScale], columnStyle);
             GUI.Label(new Rect(226f, 202f, 54f, 20f), Mathf.RoundToInt(panelScale.Value * 100f) + "%", columnCenterStyle);
             DrawScaleSlider(new Rect(20f, 229f, 260f, 18f));
 
@@ -587,10 +591,10 @@ namespace SephiriaDpsMeter
 
             rankStyle.normal.textColor = rankColor;
             GUI.Label(new Rect(rect.x + 10f, rect.y + 9f, 27f, 24f), rank.ToString("00"), rankStyle);
-            GUI.Label(new Rect(rect.x + 43f, rect.y + 4f, 157f, 22f), row.Name, nameStyle);
+            GUI.Label(new Rect(rect.x + 43f, rect.y + 4f, 157f, 22f), text.PlayerName(row.Name, row.Id), nameStyle);
 
             double share = groupTotal > 0 ? (double)row.TotalDamage * 100.0 / groupTotal : 0.0;
-            GUI.Label(new Rect(rect.x + 43f, rect.y + 24f, 157f, 17f), share.ToString("0.0") + "% 伤害占比", detailStyle);
+            GUI.Label(new Rect(rect.x + 43f, rect.y + 24f, 157f, 17f), share.ToString("0.0", CultureInfo.InvariantCulture) + text[TextKey.DamageShareSuffix], detailStyle);
             GUI.Label(new Rect(rect.x + 204f, rect.y + 9f, 88f, 24f), FormatNumber(row.TotalDamage), damageStyle);
 
             double dps = elapsed > 0.05f ? row.TotalDamage / elapsed : 0.0;
@@ -644,8 +648,8 @@ namespace SephiriaDpsMeter
                     damageByPlayer.Add(key, row);
                 }
 
-                string playerName = player.Name;
-                row.Name = string.IsNullOrEmpty(playerName) ? "玩家 " + key : playerName;
+                row.Id = key;
+                row.Name = player.Name;
                 row.TotalDamage += feedback.damageValue;
                 if (hitPlayers.Add(key))
                     row.HitCount++;
@@ -838,16 +842,17 @@ namespace SephiriaDpsMeter
         private static string FormatNumber(long value)
         {
             if (value >= 1000000000L)
-                return (value / 1000000000.0).ToString("0.00") + "B";
+                return (value / 1000000000.0).ToString("0.00", CultureInfo.InvariantCulture) + "B";
             if (value >= 1000000L)
-                return (value / 1000000.0).ToString("0.00") + "M";
+                return (value / 1000000.0).ToString("0.00", CultureInfo.InvariantCulture) + "M";
             if (value >= 10000L)
-                return (value / 1000.0).ToString("0.0") + "K";
-            return value.ToString("N0");
+                return (value / 1000.0).ToString("0.0", CultureInfo.InvariantCulture) + "K";
+            return value.ToString("N0", CultureInfo.InvariantCulture);
         }
 
         private sealed class PlayerDamage
         {
+            public uint Id;
             public string Name;
             public long TotalDamage;
             public int HitCount;
