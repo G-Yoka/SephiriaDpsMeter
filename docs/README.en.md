@@ -7,10 +7,11 @@
 
 A **BepInEx 5** damage meter for Sephiria. Track player damage, DPS and damage share for the current battle room in a movable, scalable overlay. Supports single-player and multiplayer sessions.
 
-- Current version: `v1.5.1`.
+- Source version: `v1.5.2` — retaining results after death passed automated checks; in-game verification pending.
+- Current stable release: `v1.5.1`.
 - Steam AppID: [2436940](https://store.steampowered.com/app/2436940/Sephiria/).
 - Environment: Windows / BepInEx 5 / Unity Mono.
-- Compatibility: `v1.5.1` passed compilation, automated checks and in-game testing on 2026-08-28. Game updates may require compatibility checks.
+- Compatibility: `v1.5.1` passed compilation, automated checks and in-game testing on 2026-08-28. `v1.5.2` passes compilation and automated checks; in-game verification is pending. Game updates may require compatibility checks.
 - Multiplayer: reads the game's native Mirror damage feedback on the host or client.
 
 > This is a **BepInEx 5** plugin, not a BepInEx 6 or IL2CPP plugin. Do not overwrite your existing loader with an unrelated mod's complete setup.
@@ -47,6 +48,7 @@ Install [SephiriaModSettings](https://github.com/G-Yoka/SephiriaModSettings) sep
 - **Automatic UI language (v1.5.1):** Simplified Chinese (`zh-CN`) and Traditional Chinese (`zh-TW`) both use the Simplified Chinese UI. All other game languages use English. The overlay, status messages and F9 menu update without restarting or resetting statistics. Player names are preserved.
 - **Per-player statistics:** total damage, damage share, DPS and hit count, ranked by damage.
 - **Room-based results:** battle state, floor and native battle bounds determine the current room. Results freeze when combat ends; a new battle, room or floor starts a new round.
+- **Retain results after death (v1.5.2):** death freezes the current result. Respawning in the same room continues the existing total instead of clearing it. A new room, floor or normal new battle still resets statistics.
 - **Separate rooms stay separate:** damage from teammates fighting in another room or on another floor is excluded.
 - **No idle timeout:** waiting during a battle still contributes to room time and DPS. A pause between attacks does not clear statistics.
 - **Two timers:** room battle time and the game's run timer. Run time freezes when the run ends and updates again when a new run begins.
@@ -126,7 +128,7 @@ Changing language only updates text; it does not clear damage or restart either 
 | Damage share | Player damage divided by team damage |
 | Player / team DPS | Corresponding damage divided by room battle time, not just time spent attacking |
 | Hits | At most one increment per player per feedback batch; not attack count, per-projectile hit count or accuracy |
-| Room time | Elapsed battle time for this room; freezes after combat, starts a new round on room/floor changes, and stops while the room is unrecognized |
+| Room time | Elapsed battle time for this room; display freezes after combat or death and continues after a same-room respawn; room/floor changes start a new round, and an unrecognized room pauses recording |
 | Run time | Reads `playedRealtimeClientside`, updating or freezing according to `NetworkisRunStarted` |
 
 - Only players who want to see the overlay need the plugin. Teammates do not need it just to appear in the meter.
@@ -225,7 +227,7 @@ SephiriaDpsMeter/
 
 **F9 does nothing**
 
-Confirm BepInEx 5 is installed, the DLL is in `plugins`, and `ToggleKey` has not changed. Check `BepInEx/LogOutput.log` for `Sephiria Multiplayer DPS Meter v1.5.1 loaded` or errors. Another mod may also use F9.
+Confirm BepInEx 5 is installed, the DLL is in `plugins`, and `ToggleKey` has not changed. Check `BepInEx/LogOutput.log` for `Sephiria Multiplayer DPS Meter v1.5.2 loaded` (source build), `v1.5.1 loaded` (stable release), or errors. Another mod may also use F9.
 
 **The game is in English, but the overlay is Chinese**
 

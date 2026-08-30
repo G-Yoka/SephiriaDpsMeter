@@ -15,7 +15,7 @@ namespace SephiriaDpsMeter
     {
         public const string PluginGuid = "com.sephiriamods.dpsmeter";
         public const string PluginName = "Sephiria Multiplayer DPS Meter";
-        public const string PluginVersion = "1.5.1";
+        public const string PluginVersion = "1.5.2";
 
         private const float MeterWidth = 440f;
 
@@ -57,6 +57,7 @@ namespace SephiriaDpsMeter
         private float displayedRunElapsed;
         private RoomScope currentRoomScope;
         private bool waitingForRoom;
+        private bool roomInterruptedByMissingPlayer;
         private float pendingRoomStartedAt = -1f;
         private RandomEnemyPhaseSpawner[] randomRoomSpawners = new RandomEnemyPhaseSpawner[0];
         private EnemySpawner[] fixedRoomSpawners = new EnemySpawner[0];
@@ -156,6 +157,8 @@ namespace SephiriaDpsMeter
             PlayerAvatar player = GetCurrentPlayer();
             if (player == null)
             {
+                if (roomActive)
+                    roomInterruptedByMissingPlayer = true;
                 EndRoom();
                 battleStateKnown = false;
                 waitingForRoom = false;
@@ -170,6 +173,7 @@ namespace SephiriaDpsMeter
             if (!inBattle)
             {
                 EndRoom();
+                roomInterruptedByMissingPlayer = false;
                 waitingForRoom = false;
                 pendingRoomStartedAt = -1f;
                 return;
@@ -190,7 +194,14 @@ namespace SephiriaDpsMeter
             }
 
             waitingForRoom = false;
-            if (!roomActive || !scope.IsSameRoom(currentRoomScope))
+            bool resumeInterruptedRoom = RoomScope.CanResumeAfterMissingPlayer(
+                roomInterruptedByMissingPlayer, currentRoomScope, scope);
+            roomInterruptedByMissingPlayer = false;
+            if (!roomActive && resumeInterruptedRoom)
+            {
+                ResumeRoom();
+            }
+            else if (!roomActive || !scope.IsSameRoom(currentRoomScope))
             {
                 EndRoom();
                 BeginRoom(scope);
@@ -328,6 +339,14 @@ namespace SephiriaDpsMeter
             roomEndedAt = Time.realtimeSinceStartup;
             roomActive = false;
             Logger.LogDebug("DPS room #" + roomSequence + " ended: " + damageByPlayer.Count + " player rows.");
+        }
+
+        private void ResumeRoom()
+        {
+            pendingRoomStartedAt = -1f;
+            roomEndedAt = -1f;
+            roomActive = true;
+            Logger.LogDebug("DPS room #" + roomSequence + " resumed after local player respawned.");
         }
 
         private void OnGUI()

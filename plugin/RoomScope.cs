@@ -45,6 +45,11 @@ namespace SephiriaDpsMeter
                 string.Equals(FloorGuid, other.FloorGuid, StringComparison.Ordinal);
         }
 
+        internal static bool CanResumeAfterMissingPlayer(bool interrupted, RoomScope previous, RoomScope current)
+        {
+            return interrupted && previous != null && previous.IsSameRoom(current);
+        }
+
         internal bool AllowsDamage(string ownerFloor, float ownerX, float ownerY, float targetX, float targetY)
         {
             return !string.IsNullOrEmpty(ownerFloor) &&

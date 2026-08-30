@@ -1,5 +1,12 @@
 # 更新记录
 
+## v1.5.2（未发布 / Unreleased）
+
+- 修复本地玩家死亡、玩家对象短暂消失并在同一房间恢复后，已有总伤被当作新房间数据清空的问题。
+- 死亡期间冻结当前结果；同房复活后恢复统计并保留玩家排行、总伤与房间序号。新房间、不同楼层或正常新一轮战斗仍会重置。
+- 34 项本地房间规则测试与 112 项语言测试通过；游戏内验证待完成。
+- Retains room totals across a death and same-room respawn while preserving normal resets for new battles, rooms and floors. In-game verification pending.
+
 ## v1.5.1
 
 - 游戏选择繁体中文（`zh-TW`）时，DPS 面板与 F9 设置改为使用简体中文，简体中文及其他语言的行为不变。
