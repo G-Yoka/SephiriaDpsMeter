@@ -1,8 +1,8 @@
-# Sephiria DPS Meter v1.5.2 安装说明
+# Sephiria DPS Meter v1.5.3 安装说明
 
 中文使用说明见 README.md；English installation and usage: README.en.md.
 
-此版本已通过编译与自动测试，死亡后保留数据修复待游戏内验证。
+此版本已通过编译与自动测试，死亡与复活状态修复待游戏内验证。
 
 作者：G-Yoka · Steam AppID：2436940
 

@@ -15,7 +15,7 @@ namespace SephiriaDpsMeter
     {
         public const string PluginGuid = "com.sephiriamods.dpsmeter";
         public const string PluginName = "Sephiria Multiplayer DPS Meter";
-        public const string PluginVersion = "1.5.2";
+        public const string PluginVersion = "1.5.3";
 
         private const float MeterWidth = 440f;
 
@@ -157,8 +157,20 @@ namespace SephiriaDpsMeter
             PlayerAvatar player = GetCurrentPlayer();
             if (player == null)
             {
-                if (roomActive)
-                    roomInterruptedByMissingPlayer = true;
+                roomInterruptedByMissingPlayer = RoomScope.UpdateDeathInterruption(
+                    roomInterruptedByMissingPlayer, roomActive, false, true, false);
+                EndRoom();
+                battleStateKnown = false;
+                waitingForRoom = false;
+                pendingRoomStartedAt = -1f;
+                return;
+            }
+
+            if (player.IsDead)
+            {
+                roomInterruptedByMissingPlayer = RoomScope.UpdateDeathInterruption(
+                    roomInterruptedByMissingPlayer, roomActive,
+                    hasRoomResult && currentRoomScope != null, true, false);
                 EndRoom();
                 battleStateKnown = false;
                 waitingForRoom = false;
@@ -173,7 +185,11 @@ namespace SephiriaDpsMeter
             if (!inBattle)
             {
                 EndRoom();
-                roomInterruptedByMissingPlayer = false;
+                // After death the avatar can exist again before IsInBattle becomes true.
+                // Preserve the interruption until its room can be compared on battle re-entry.
+                roomInterruptedByMissingPlayer = RoomScope.UpdateDeathInterruption(
+                    roomInterruptedByMissingPlayer, roomActive,
+                    hasRoomResult && currentRoomScope != null, false, false);
                 waitingForRoom = false;
                 pendingRoomStartedAt = -1f;
                 return;
@@ -313,7 +329,12 @@ namespace SephiriaDpsMeter
             if (runStarted)
                 displayedRunElapsed = gameElapsed;
             else if (observedRunStarted)
+            {
                 displayedRunElapsed = gameElapsed;
+                roomInterruptedByMissingPlayer = RoomScope.UpdateDeathInterruption(
+                    roomInterruptedByMissingPlayer, roomActive,
+                    hasRoomResult && currentRoomScope != null, false, true);
+            }
 
             observedRunStarted = runStarted;
         }

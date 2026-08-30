@@ -50,6 +50,14 @@ namespace SephiriaDpsMeter
             return interrupted && previous != null && previous.IsSameRoom(current);
         }
 
+        internal static bool UpdateDeathInterruption(bool interrupted, bool roomActive,
+            bool roomResultAvailable, bool playerUnavailableOrDead, bool runEnded)
+        {
+            if (runEnded)
+                return false;
+            return interrupted || ((roomActive || roomResultAvailable) && playerUnavailableOrDead);
+        }
+
         internal bool AllowsDamage(string ownerFloor, float ownerX, float ownerY, float targetX, float targetY)
         {
             return !string.IsNullOrEmpty(ownerFloor) &&
