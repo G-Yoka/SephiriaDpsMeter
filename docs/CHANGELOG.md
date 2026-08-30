@@ -1,14 +1,14 @@
 # 更新记录
 
-## v1.5.4（未发布 / Unreleased）
+## v1.5.4
 
 - 修复本地玩家死亡时 `IsInBattle` 先变为 false，导致 v1.5.2 的中断标记被提前清除、同房复活仍重置总伤的问题。
 - 现在会识别 `PlayerAvatar.IsDead`，并在复活过渡阶段持续保留中断状态；同房复活后恢复统计并保留双方玩家排行、总伤与房间序号。
 - 修复返回联机大厅后仍显示上一局结果的问题；本局失败时先在死亡结算阶段冻结结果，玩家回到大厅后再完整清零。
 - 房间识别与伤害记录现在必须处于有效地下城整局中；攻击联机大厅假人不会进入“房间识别中”。
 - 新房间、不同楼层或正常新一轮战斗仍会重置。
-- 48 项本地房间规则测试与 112 项语言测试通过；游戏内验证待完成。
-- Preserves results through death and the failure screen, clears them on returning to the lobby, and prevents lobby training dummies from starting room detection. In-game verification pending.
+- 48 项本地房间规则测试与 112 项语言测试通过；已于 2026-08-30 完成双人联机游戏验证。
+- Preserves results through death and the failure screen, clears them on returning to the lobby, and prevents lobby training dummies from starting room detection. Two-player multiplayer testing completed on 2026-08-30.
 
 ## v1.5.1
 

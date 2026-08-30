@@ -2,7 +2,7 @@
 
 中文使用说明见 README.md；English installation and usage: README.en.md.
 
-此版本已通过编译与自动测试，死亡、复活与联机大厅生命周期修复待游戏内验证。
+此版本已通过编译、自动测试与双人联机游戏验证（2026-08-30）。
 
 作者：G-Yoka · Steam AppID：2436940
 
