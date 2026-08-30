@@ -15,7 +15,7 @@ namespace SephiriaDpsMeter
     {
         public const string PluginGuid = "com.sephiriamods.dpsmeter";
         public const string PluginName = "Sephiria Multiplayer DPS Meter";
-        public const string PluginVersion = "1.5.3";
+        public const string PluginVersion = "1.5.4";
 
         private const float MeterWidth = 440f;
 
@@ -144,16 +144,19 @@ namespace SephiriaDpsMeter
             if (keyboard != null && keyboard[toggleKey.Value].wasPressedThisFrame)
                 SetSettingsVisible(!settingsVisible);
 
-            PollRoomLifecycle();
-            PollRunLifecycle();
+            bool runActive = PollRunLifecycle();
+            PollRoomLifecycle(runActive);
 
             if (wasVisible && !meterEnabled.Value)
                 SaveWindowPosition();
             wasVisible = meterEnabled.Value;
         }
 
-        private void PollRoomLifecycle()
+        private void PollRoomLifecycle(bool runActive)
         {
+            if (!runActive)
+                return;
+
             PlayerAvatar player = GetCurrentPlayer();
             if (player == null)
             {
@@ -307,36 +310,78 @@ namespace SephiriaDpsMeter
             return manager != null ? manager.CurrentPlayer : null;
         }
 
-        private void PollRunLifecycle()
+        private bool PollRunLifecycle()
         {
             DungeonManager manager = DungeonManager.Instance;
             if (manager == null)
             {
                 runStateKnown = false;
-                return;
+                observedRunStarted = false;
+                displayedRunElapsed = 0f;
+                ResetForLobby();
+                return RoomScope.CanTrackRoom(false, false);
             }
 
             bool runStarted = manager.NetworkisRunStarted;
+            bool runActive = RoomScope.CanTrackRoom(true, runStarted);
+            PlayerAvatar currentPlayer = GetCurrentPlayer();
+            bool resetForLobby = RoomScope.ShouldResetForLobby(true, runStarted,
+                currentPlayer != null, currentPlayer != null && currentPlayer.IsDead);
             float gameElapsed = Mathf.Max(0f, manager.playedRealtimeClientside);
             if (!runStateKnown)
             {
                 runStateKnown = true;
                 observedRunStarted = runStarted;
-                displayedRunElapsed = gameElapsed;
-                return;
+                displayedRunElapsed = runStarted || !resetForLobby ? gameElapsed : 0f;
+                if (resetForLobby)
+                    ResetForLobby();
+                return runActive;
             }
 
             if (runStarted)
                 displayedRunElapsed = gameElapsed;
-            else if (observedRunStarted)
+            else
             {
-                displayedRunElapsed = gameElapsed;
                 roomInterruptedByMissingPlayer = RoomScope.UpdateDeathInterruption(
                     roomInterruptedByMissingPlayer, roomActive,
                     hasRoomResult && currentRoomScope != null, false, true);
+                if (resetForLobby)
+                {
+                    displayedRunElapsed = 0f;
+                    ResetForLobby();
+                }
+                else if (observedRunStarted)
+                {
+                    displayedRunElapsed = gameElapsed;
+                }
             }
 
             observedRunStarted = runStarted;
+            return runActive;
+        }
+
+        private void ResetForLobby()
+        {
+            bool hadRoomState = roomActive || hasRoomResult || damageByPlayer.Count > 0 ||
+                roomSequence != 0 || waitingForRoom;
+            EndRoom();
+            damageByPlayer.Clear();
+            scrollPosition = Vector2.zero;
+            battleStateKnown = false;
+            observedBattleState = false;
+            roomActive = false;
+            hasRoomResult = false;
+            roomSequence = 0;
+            roomStartedAt = -1f;
+            roomEndedAt = -1f;
+            currentRoomScope = null;
+            waitingForRoom = false;
+            pendingRoomStartedAt = -1f;
+            roomInterruptedByMissingPlayer = false;
+            cachedFloorGuid = null;
+            nextRoomScanAt = 0f;
+            if (hadRoomState)
+                Logger.LogDebug("DPS results cleared after returning to the lobby.");
         }
 
         private void BeginRoom(RoomScope scope)
@@ -648,7 +693,9 @@ namespace SephiriaDpsMeter
                 return;
 
             // Network callbacks can arrive before Update or after a room transition.
-            PollRoomLifecycle();
+            if (!PollRunLifecycle())
+                return;
+            PollRoomLifecycle(true);
             if (!roomActive || waitingForRoom || currentRoomScope == null)
                 return;
 

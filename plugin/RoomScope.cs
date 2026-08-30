@@ -58,6 +58,17 @@ namespace SephiriaDpsMeter
             return interrupted || ((roomActive || roomResultAvailable) && playerUnavailableOrDead);
         }
 
+        internal static bool CanTrackRoom(bool dungeonManagerAvailable, bool runStarted)
+        {
+            return dungeonManagerAvailable && runStarted;
+        }
+
+        internal static bool ShouldResetForLobby(bool dungeonManagerAvailable, bool runStarted,
+            bool playerAvailable, bool playerDead)
+        {
+            return !dungeonManagerAvailable || (!runStarted && playerAvailable && !playerDead);
+        }
+
         internal bool AllowsDamage(string ownerFloor, float ownerX, float ownerY, float targetX, float targetY)
         {
             return !string.IsNullOrEmpty(ownerFloor) &&
